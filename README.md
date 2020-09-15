@@ -9,4 +9,4 @@ This is a demo project with a CLI, library and test project which will be used a
 TODO:
 1. ~~Add build and test action on PR~~
 2. ~~Test integration with ADO pipelines~~
-3. Integrate PR build in Azure DevOps
+3. ~~Integrate PR build in Azure DevOps~~

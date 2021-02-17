@@ -21,10 +21,33 @@ steps:
     command: 'build'
     projects: 'src/HelloWorld/HelloWorld.sln'
     arguments: '--configuration $(buildConfiguration)'
+  enabled: false
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
     projects: 'src/HelloWorld/HelloWorld.sln'
     testRunTitle: 'Test HelloWorld.sln'
+  enabled: false
 
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      Write-Host "Set authorization headers"
+            $headers = @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN"; "Content-Type" = "application/json"; "Accept" = "application/json" }
+            $url = "https://dev.azure.com/MicrosoftIT/OneITVSO/_apis/build/retention/leases?api-version=6.0-preview.1"
+            $rawBody = @(
+              @{
+                daysValid = '400' ## The number of days to consider the lease valid.
+                definitionId = $(System.DefinitionId) ## The pipeline definition of the run.
+                ownerId =  'damongr' ## User-provided string that identifies the owner of a retention lease.
+                protectPipeline = 'true' ## If set, this lease will also prevent the pipeline from being deleted while the lease is still valid.
+                runId = $(Build.BuildId) ## The pipeline run to protect.
+              }
+            )
+            $body = ConvertTo-Json -InputObject $rawBody
+            Write-Host "Body: $body"
+            Invoke-RestMethod -Method 'Post' -Headers $headers -Uri $url -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)

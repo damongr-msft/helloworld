@@ -50,4 +50,4 @@ steps:
             Write-Host "Body: $body"
             Invoke-RestMethod -Method 'Post' -Headers $headers -Uri $url -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
   env:
-    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)

@@ -36,26 +36,21 @@ steps:
     script: |
       $ver = $HOST.Version
       Write-Host "PSVersion: $ver"
-      Write-Host "Set authorization headers"
-      #$s=$env:SYSTEM_ACCESSTOKEN;
-      #$a=$s.ToCharArray();
-      #$c=0;for($i=[int]($a.Length/2); $c -lt 8 -and $i -lt $a.Length; $i++) { Write-Host "$i $c"; $a[$i]='X'; $c++ }
-      #$s = New-Object -TypeName String -ArgumentList (,$a)
-      #Write-Host "ProcessedToken: '$s'"
-      $headers = @{ "Authorization" = "Bearer $env:SYSTEM_ACCESSTOKEN" }
-      $url = "https://dev.azure.com/MicrosoftIT/OneITVSO/_apis/build/retention/leases?api-version=6.0-preview.1"
-      $rawBody = @(
-         @{
-            daysValid = '400' ## The number of days to consider the lease valid.
-            definitionId = $(System.DefinitionId) ## The pipeline definition of the run.
-            ownerId =  'damongr' ## User-provided string that identifies the owner of a retention lease.
-            protectPipeline = 'true' ## If set, this lease will also prevent the pipeline from being deleted while the lease is still valid.
-            runId = $(Build.BuildId) ## The pipeline run to protect.
-          }
-         )
-         $body = ConvertTo-Json -InputObject $rawBody
-         Write-Host "Body: $body"
+      Write-Host "Set authorization headers"
+      $headers = @{ "Authorization" = "Bearer $env:SYSTEM_ACCESSTOKEN" }
+      $url = "https://dev.azure.com/MicrosoftIT/OneITVSO/_apis/build/retention/leases?api-version=6.0-preview.1"
+      $rawBody = @(
+         @{
+            daysValid = '400' ## The number of days to consider the lease valid.
+            definitionId = $(System.DefinitionId) ## The pipeline definition of the run.
+            ownerId =  'PolicyService' ## User-provided string that identifies the owner of a retention lease.
+            protectPipeline = 'true' ## If set, this lease will also prevent the pipeline from being deleted while the lease is still valid.
+            runId = $(Build.BuildId) ## The pipeline run to protect.
+          }
+         )
+         $body = ConvertTo-Json -InputObject $rawBody
+         Write-Host "Body: $body"
 
-         Invoke-RestMethod -SkipHeaderValidation -Method 'Post' -Headers $headers -ContentType "application/json" -Uri $url -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
+         Invoke-RestMethod -Method 'Post' -Headers $headers -ContentType "application/json" -Uri $url -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)

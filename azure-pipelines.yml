@@ -42,7 +42,7 @@ steps:
       #$c=0;for($i=[int]($a.Length/2); $c -lt 8 -and $i -lt $a.Length; $i++) { Write-Host "$i $c"; $a[$i]='X'; $c++ }
       #$s = New-Object -TypeName String -ArgumentList (,$a)
       #Write-Host "ProcessedToken: '$s'"
-      $headers = @{ "Authorization" = "Bearer $env:SYSTEM_ACCESSTOKEN"; "Content-Type" = "application/json"; "Accept" = "application/json" }
+      $headers = @{ "Authorization" = "Bearer $env:SYSTEM_ACCESSTOKEN" }
       $url = "https://dev.azure.com/MicrosoftIT/OneITVSO/_apis/build/retention/leases?api-version=6.0-preview.1"
       $rawBody = @(
          @{
@@ -55,7 +55,7 @@ steps:
          )
          $body = ConvertTo-Json -InputObject $rawBody
          Write-Host "Body: $body"
-      
-         Invoke-RestMethod -SkipHeaderValidation -Method 'Post' -Headers $headers -Uri $url -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
+
+         Invoke-RestMethod -SkipHeaderValidation -Method 'Post' -Headers $headers -ContentType "application/json" -Uri $url -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)

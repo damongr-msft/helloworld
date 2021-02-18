@@ -55,6 +55,7 @@ steps:
          )
          $body = ConvertTo-Json -InputObject $rawBody
          Write-Host "Body: $body"
+      
          Invoke-RestMethod -SkipHeaderValidation -Method 'Post' -Headers $headers -Uri $url -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
